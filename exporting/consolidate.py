@@ -12,7 +12,7 @@ logger.setLevel(logging.DEBUG)
 logging.basicConfig(format="%(asctime)s|%(message)s")
 
 def consolidateGeometry(projectDirectory,destinationDirectory,runDaylightDir='unnamed',mainMaterialFile='material_unnamed.rad',
-                        mainGeometryFile='unnamed.rad',overWrite=False,copyPointsFiles=True):
+                        mainGeometryFile='unnamed.rad',overWrite=False,copyPointsFiles=True,splitMainGeometryFile=True):
     """
     Consolidate a Honeybee daylighting simulation with breps, meshes etc into a single directory.
 
@@ -74,10 +74,13 @@ def consolidateGeometry(projectDirectory,destinationDirectory,runDaylightDir='un
 
 
 
+
+    mainGeomDict={}
+
     # for files in materialsList:
     #     with open(files) as someFile:
     #         print(" ".join(someFile.read().split()))
 
 
-
-consolidateGeometry(r'C:\Users\ssubramaniam\Projects\SFO\09202017',r'C:\Users\ssubramaniam\Projects\SFO\a')
+if __name__ == "__main__":
+    consolidateGeometry(r'C:\Users\ssubramaniam\Projects\SFO\09202017',r'C:\Users\ssubramaniam\Projects\SFO\a')
