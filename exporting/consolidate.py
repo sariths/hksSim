@@ -72,15 +72,58 @@ def consolidateGeometry(projectDirectory,destinationDirectory,runDaylightDir='un
             else:
                 logging.warning("MSH2RAD directory was not found in %s"%fullPath)
 
+    radsurf = ('sphere', 'bubble', 'polygon', 'cone', 'cup', 'cylinder', 'tube', 'ring', 'mesh', 'instance')
+
+
+    try:
+        os.mkdir(os.path.join(destinationDirectory,'objects'))
+    except:
+        logger.warning("Could not create 'objects' directory. It might already exist.")
 
 
 
-    mainGeomDict={}
+    xformFileStr = ''
+    if splitMainGeometryFile:
+        mainGeomDict={}
+        geomList = []
+        with open(mainGeometryFileFullpath) as geometryData:
+            for lines in geometryData:
+                lineSplit=lines.strip().split()
+                if lineSplit and not lines.strip().startswith('#'):
+                    geomList.extend(lineSplit)
 
+        for idx,val in enumerate(geomList):
+            if val in radsurf:
+                matName = geomList[idx-1]
+                vertexCount=int(geomList[idx+4])
+                span=geomList[idx-1:idx+5+vertexCount]
+                if matName in mainGeomDict:
+                    mainGeomDict[matName].append(" ".join(span))
+                else:
+                    mainGeomDict[matName]=[" ".join(span)]
+
+
+        for key,value in mainGeomDict.items():
+            with open(os.path.join(destinationDirectory,'objects','%s.rad'%key),'w') as geometryFile:
+                xformFileStr+='!xform %s\n'%('./objects/%s.rad'%key)
+                for geom in value:
+                    geometryFile.write(geom+'\n')
+    else:
+        shutil.copy(mainGeometryFileFullpath,os.path.join(destinationDirectory,'objects',mainGeometryFile))
+        xformFileStr+='!xform %s\n'%('./objects/%s'%mainGeometryFile)
+
+
+    xformFileStr +='\n# Linking Mesh files (if present).\n\n'
+    for geomFile in geometryList:
+        fileNameOnly = os.path.split(geomFile)[-1]
+        shutil.copy(geomFile,os.path.join(destinationDirectory,'objects',fileNameOnly))
+        xformFileStr += '!xform %s\n' % ('./objects/%s' % fileNameOnly)
+    print(xformFileStr)
     # for files in materialsList:
     #     with open(files) as someFile:
     #         print(" ".join(someFile.read().split()))
 
 
 if __name__ == "__main__":
-    consolidateGeometry(r'C:\Users\ssubramaniam\Projects\SFO\09202017',r'C:\Users\ssubramaniam\Projects\SFO\a')
+    consolidateGeometry(r'C:\Users\ssubramaniam\Projects\SFO\09202017',r'C:\Users\ssubramaniam\Projects\SFO\a',overWrite=True,
+                        splitMainGeometryFile=True)
