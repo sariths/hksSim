@@ -1,6 +1,6 @@
 """Contains a function that will consolidate geometry files from a honeybee project."""
 
-
+from __future__ import print_function
 import os
 import logging
 import shutil
@@ -51,8 +51,8 @@ def consolidateGeometry(projectDirectory,destinationDirectory,runDaylightDir='un
     assert runDaylightDir in projectDirs,\
         'The directory %s was not found %s'%(runDaylightDir,projectDirectory)
 
-    materialsList = []
-    geometryList = []
+    meshMaterialsList = []
+    meshGeometryList = []
 
     for dr in projectDirs:
         fullPath=os.path.join(projectDirectory,dr)
@@ -65,8 +65,8 @@ def consolidateGeometry(projectDirectory,destinationDirectory,runDaylightDir='un
                     geoList  = glob.glob(os.path.join(fullPath, 'MSH2RADFiles', "%s*.rad" % dr))
                     assert matList and len(matList)==1
                     assert geoList and len(geoList)==1
-                    materialsList.append(matList[0])
-                    geometryList.append(geoList[0])
+                    meshMaterialsList.append(matList[0])
+                    meshGeometryList.append(geoList[0])
                 except AssertionError:
                     logging.warning("Error occured in %s"%fullPath)
             else:
@@ -82,8 +82,9 @@ def consolidateGeometry(projectDirectory,destinationDirectory,runDaylightDir='un
 
 
 
-    xformFileStr = ''
+    xformFileStr = '\n\n#Geometry from the main file.\n'
     if splitMainGeometryFile:
+        logger.warning("Splitting the main geometry file according to modifiers.")
         mainGeomDict={}
         geomList = []
         with open(mainGeometryFileFullpath) as geometryData:
@@ -105,6 +106,7 @@ def consolidateGeometry(projectDirectory,destinationDirectory,runDaylightDir='un
 
         for key,value in mainGeomDict.items():
             with open(os.path.join(destinationDirectory,'objects','%s.rad'%key),'w') as geometryFile:
+                logger.warning("\tWriting the geometry for %s to disc"%key)
                 xformFileStr+='!xform %s\n'%('./objects/%s.rad'%key)
                 for geom in value:
                     geometryFile.write(geom+'\n')
@@ -113,16 +115,29 @@ def consolidateGeometry(projectDirectory,destinationDirectory,runDaylightDir='un
         xformFileStr+='!xform %s\n'%('./objects/%s'%mainGeometryFile)
 
 
-    xformFileStr +='\n# Linking Mesh files (if present).\n\n'
-    for geomFile in geometryList:
+    xformFileStr +='\n\n# Linking Mesh files (if present).\n'
+    for geomFile in meshGeometryList:
         fileNameOnly = os.path.split(geomFile)[-1]
         shutil.copy(geomFile,os.path.join(destinationDirectory,'objects',fileNameOnly))
         xformFileStr += '!xform %s\n' % ('./objects/%s' % fileNameOnly)
-    print(xformFileStr)
-    # for files in materialsList:
-    #     with open(files) as someFile:
-    #         print(" ".join(someFile.read().split()))
 
+    with open(os.path.join(destinationDirectory,'materials.rad'),'w') as materialFile:
+        with open(mainMaterialFileFullPath) as mainMatFile:
+            print("#Writing material files from main project to disc.",file=materialFile)
+            for lines in mainMatFile:
+                lines = lines.strip()
+                if not lines.startswith('#'):
+                    print(lines,file=materialFile)
+        print("#Writing mesh materials, if present, to disc.",file=materialFile)
+
+        for files in meshMaterialsList:
+            with open(files) as someFile:
+                print(" ".join(someFile.read().split()),file=materialFile)
+
+    xformFileStr = "%s\n%s"%('!xform ./materials.rad',xformFileStr)
+
+    with open(os.path.join(destinationDirectory,'scene.rad'),'w') as sceneFile:
+        sceneFile.write(xformFileStr)
 
 if __name__ == "__main__":
     consolidateGeometry(r'C:\Users\ssubramaniam\Projects\SFO\09202017',r'C:\Users\ssubramaniam\Projects\SFO\a',overWrite=True,
