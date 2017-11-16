@@ -20,9 +20,13 @@ def consolidateGeometry(projectDirectory,destinationDirectory,runDaylightDir='un
     :param destinationDirectory: Directory, preferably empty, to which the files should be consolidated to.
     :param runDaylightDir: This is the subdirectory within the "projectDirectory" which contains brep geometry, points files
         etc. Defaults to 'unnamed'..specify a different value if the folder isn't called unnamed.
-    :param mainMaterialFile:
-    :param mainGeometryFile:
-    :param overWrite:
+    :param mainMaterialFile:The material file that is written by the runDaylightSimulation component in honeybee.
+        The default has already been provided.
+    :param mainGeometryFile: The geometry file that is written by the runDaylightSimulation component. Default provided.
+    :param overWrite: If set to True, it will overwrite existing files at the destination folder.
+    :param copyPointsFiles: This option is not implemented yet.
+    :param splitMainGeometryFile: Set this to True to split the entire project by modifier type. Default is True (and
+        recommended).
     :return:
     """
 
