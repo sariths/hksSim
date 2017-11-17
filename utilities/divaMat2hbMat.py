@@ -1,7 +1,7 @@
 # coding=utf-8
 import os
 
-def makeHBmaterials(divaFile,hbMatFileName='HoneybeeRadMaterials.mat'):
+def makeHBmatFromDivaMat(divaFile, hbMatFileName='HoneybeeRadMaterials.mat'):
     """
     Take a DIVA material file and write a Honeybee-friendly material database. The written file needs to be placed
     inside the Ladybug root folder...Usually c:\ladybug.
@@ -29,4 +29,4 @@ def makeHBmaterials(divaFile,hbMatFileName='HoneybeeRadMaterials.mat'):
         writeMatData.write(hbStr)
 
 if __name__ == "__main__":
-    makeHBmaterials(r'C:\Users\ssubramaniam\Documents\My Received Files\HoneybeeRadMaterials.mat')
+    makeHBmatFromDivaMat(r'C:\Users\ssubramaniam\Documents\My Received Files\HoneybeeRadMaterials.mat')
