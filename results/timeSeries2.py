@@ -12,26 +12,6 @@ import logging
 logger = logging.getLogger("__main__")
 logging.basicConfig(format='%(asctime)s -%(levelname)s module:%(module)s function:%(funcName)s message--%(message)s')
 
-def __housekeeping__():
-    try:
-        __IPYTHON__
-        raise Exception,"These scripts cannot be run from Ipython. Use standard python instead."
-    except NameError:
-        pass
-
-    import os,sys
-    currentfilename = __file__
-
-    assert "RadScripts" in currentfilename,"\nThe path:{} is out of the RadScripts directory structure.\nSomething went horribly wrong!!".format(currentfilename)
-
-    #Keep splitting the path till it ends with RadScripts.
-    while not currentfilename.endswith("RadScripts"):
-        currentfilename = os.path.split(currentfilename)[0]
-
-     #Now that Radscripts root has been found append it to sys.path
-    sys.path.append(currentfilename)
-
-    logger.critical("{} successfully appended to sys.path".format(currentfilename))
 
 import sys
 import datetime as  dt
@@ -149,22 +129,6 @@ class TimeArray(object):
                         dataval = floatlines[3:]
 
                     timeStampsFromFile.append((month,date,hour))
-                    #Update:
-                    ##Code to check if the first time value is 1.0. If so subtract every hour by 0.5
-                    # if not hour1 or hour0:
-                    #     hour1 = hour
-                    #     if hour0==1.0 and hour1==2.0:
-                    #         #Go back to the array that stores timevalues and fix the hour and time stamp
-                    #         timefiledata[0].hour=0.5
-                    #         print(year)
-                    #         timefiledata[0].timeStamp=timeStampCalc(1,1,0.5,yearval=year)
-                    #         fixtimeflag=True
-                    # if not hour0:
-                    #     hour0 = hour
-                    #
-                    # if fixtimeflag:
-                    #     hour = hour-0.5
-                    # ##Code to check if the first time value is 1.0. If so subtract every hour by 0.5
 
 
 
@@ -361,15 +325,4 @@ class TimeArray(object):
 
 #Test the module.
 if __name__ ==  '__main__':
-     __housekeeping__()
-     # illfile = TimeArray(r'examples\test_BF.txt')
-     # weaFile = TimeArray(r'examples\statecollege.wea',firstDay=4)
-     epwFile = TimeArray(r'examples\new.epw',delimiter=',')
-     # shadeFile = TimeArray(r'examples/shadeSignals.sig')
-     illFile = TimeArray(r'examples/CLASSROOM.ill')
-     print(len(illFile.data))
-     print(illFile.dataFilterTime(1,hours=(16,17),weekday=(0)))
-     print(epwFile.dataFilterTime(hours=8))
-     # print(weaFile.timedata[0])
-     # print(epwFile.extradata)
-     # print(shadeFile.timedata[0])
+    pass

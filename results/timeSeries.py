@@ -12,26 +12,6 @@ import logging
 logger = logging.getLogger("__main__")
 logging.basicConfig(format='%(asctime)s -%(levelname)s module:%(module)s function:%(funcName)s message--%(message)s')
 
-def __housekeeping__():
-    try:
-        __IPYTHON__
-        raise Exception,"These scripts cannot be run from Ipython. Use standard python instead."
-    except NameError:
-        pass
-
-    import os,sys
-    currentfilename = __file__
-
-    assert "RadScripts" in currentfilename,"\nThe path:{} is out of the RadScripts directory structure.\nSomething went horribly wrong!!".format(currentfilename)
-
-    #Keep splitting the path till it ends with RadScripts.
-    while not currentfilename.endswith("RadScripts"):
-        currentfilename = os.path.split(currentfilename)[0]
-
-     #Now that Radscripts root has been found append it to sys.path
-    sys.path.append(currentfilename)
-
-    logger.critical("{} successfully appended to sys.path".format(currentfilename))
 
 import sys
 import datetime as  _dt
@@ -115,10 +95,4 @@ class TimeArray(object):
 
 #Test the module.
 if __name__ ==  '__main__':
-     __housekeeping__()
-     illfile = TimeArray(r'examples\test_BF.txt')
-
-     print(illfile.timedata[:5])
-     print(illfile.extradata)
-
-     epwFile = TimeArray(r'examples\statecollege.epw',delimiter=',')
+     pass
