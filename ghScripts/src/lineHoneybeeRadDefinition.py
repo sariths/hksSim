@@ -22,6 +22,8 @@ except: pass
 import scriptcontext as sc
 import Grasshopper.Kernel as gh
 
+
+
 def main(_matName):
     if not sc.sticky.has_key('honeybee_release'):
         print "You should first let Honeybee fly..."
@@ -31,15 +33,18 @@ def main(_matName):
 
     matDict = dict(sc.sticky['honeybee_RADMaterialLib'])
 
-    matInHB="\n".join(sorted(matDict.keys()))
-
     try:
         material = matDict[_matName]
     except:
-         msg = "'%s' was not found in the list of defined materials"%_matName
-         raise Exception(msg)
-    return matInHB,material
+         msg = "'%s' was not found in the list of defined materials."%_matName
+         msg+="\nCheck the 'matInHB' output to see the list of available materials"
+         w = gh.GH_RuntimeMessageLevel.Warning
+         ghenv.Component.AddRuntimeMessage(w, msg)
+         return None
+    return material
 
 
 if __name__ =="__main__" and _matName:
-    matInHB,radDef = main(_matName)
+    matDict = dict(sc.sticky['honeybee_RADMaterialLib'])
+    matInHB="\n".join(sorted(matDict.keys()))
+    radDef = main(_matName)
