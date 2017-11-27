@@ -5,6 +5,7 @@ Return Radiance Material definition based on an inputMaterial name
         _matName: Name of the material. This name should already exist in the
             Honeybee Radiance Material Library.
     Returns:
+        matInHB: Lists all the materials available in the Honeybee database.
         radDef: The Radiance definition for the specified material name.
 """
 ghenv.Component.Name = "LINE_Honeybee_Rad Definition"
@@ -13,15 +14,13 @@ ghenv.Component.Message = 'VER 0.0.01\nNOV_27_2017'
 ghenv.Component.IconDisplayMode = ghenv.Component.IconDisplayMode.application
 ghenv.Component.Category = "MISC"
 ghenv.Component.SubCategory = "LINE"
-
-try:
-    ghenv.Component.AdditionalHelpFromDocStrings = "1"
-except:
-    pass
+#compatibleHBVersion = VER 0.0.56\nDEC_21_2015
+#compatibleLBVersion = VER 0.0.59\nFEB_01_2015
+try: ghenv.Component.AdditionalHelpFromDocStrings = "1"
+except: pass
 
 import scriptcontext as sc
 import Grasshopper.Kernel as gh
-
 
 def main(_matName):
     if not sc.sticky.has_key('honeybee_release'):
@@ -31,13 +30,16 @@ def main(_matName):
         raise Exception("You should first let Honeybee fly...")
 
     matDict = dict(sc.sticky['honeybee_RADMaterialLib'])
+
+    matInHB="\n".join(sorted(matDict.keys()))
+
     try:
         material = matDict[_matName]
     except:
-        msg = "'%s' was not found in the list of defined materials" % _matName
-        raise Exception(msg)
-    return material
+         msg = "'%s' was not found in the list of defined materials"%_matName
+         raise Exception(msg)
+    return matInHB,material
 
 
-if __name__ == "__main__" and _matName:
-    radDef = main(_matName)
+if __name__ =="__main__" and _matName:
+    matInHB,radDef = main(_matName)
