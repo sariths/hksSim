@@ -1,6 +1,8 @@
+import warnings
 #Calculate the number of points in the file
 def calcpoints(pointsfilepath):
     """
+    Calculate
     :param pointsfilepath: path for the points file
     :return:
     """
